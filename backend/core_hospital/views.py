@@ -9,6 +9,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models import OuterRef, Subquery, Q
+from rest_framework.authtoken.models import Token
 
 # --- VIEW CRUD PATIENT ---
 
@@ -402,12 +403,15 @@ def user_login(request):
         return Response({"detail": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
     
     user = authenticate(request, username=username, password=password)
-
+    token, _ = Token.objects.get_or_create(user=user)
     if user is not None:
         login(request, user)
         return Response({
             "detail": "Login successful.",
+            "token": token.key,
             "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "role": user.role,
             "is_superuser": user.is_superuser
         }, status=status.HTTP_200_OK)

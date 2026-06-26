@@ -5,12 +5,14 @@ import {
   LogOut,
   UserRoundPen,
 } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 interface UserInfoProps {}
 
 export default function UserInfo({}: UserInfoProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const auth = useContext(AuthContext);
 
   return (
     <div
@@ -23,11 +25,11 @@ export default function UserInfo({}: UserInfoProps) {
         <User />
       </div>
       <div className="flex flex-1 flex-col justify-center sm:flex-initial">
-        <span className="mb-1 text-[10px] leading-none font-bold tracking-wider text-background/50">
-          DOCTOR
+        <span className="mb-1 text-[10px] leading-none font-bold tracking-wider text-background/50 uppercase">
+          {auth?.user?.role}
         </span>
         <span className="text-sm leading-none font-medium text-background">
-          Mario Rossi
+          {auth?.user?.last_name} {auth?.user?.first_name}
         </span>
       </div>
       <div
@@ -49,7 +51,10 @@ export default function UserInfo({}: UserInfoProps) {
               <Settings size={18} />
               <span>Settings</span>
             </button>
-            <button className="flex w-full items-center gap-3 rounded-xl p-3 text-sm font-medium text-red-400 cursor-pointer hover:bg-red-500/10 transition-colors">
+            <button
+              className="flex w-full items-center gap-3 rounded-xl p-3 text-sm font-medium text-red-400 cursor-pointer hover:bg-red-500/10 transition-colors"
+              onClick={() => auth?.logoutUser()}
+            >
               <LogOut size={18} />
               <span>Log out</span>
             </button>

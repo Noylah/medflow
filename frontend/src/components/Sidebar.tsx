@@ -24,6 +24,7 @@ export default function Sidebar({ links }: SidebarProps) {
               isActive={location.pathname === link.route}
               icon={link.icon}
               to={link.route}
+              key={link.route}
             >
               {link.name}
             </SidebarItem>

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-e3&5=21w+b*rg59b$-_*-g9xg(wmmkaw%lfke9naq*efahu@pa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.86']
 
 AUTH_USER_MODEL = 'core_hospital.HospitalUser' # Usa il modello HospitalUser per loggare
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # Installate da me
     'rest_framework', # Django REST Framework
+    'rest_framework.authtoken', # DRF Auth Token
     'corsheaders', # Per connessione backend e frontend
     'core_hospital', # App per API
 ]
@@ -61,6 +62,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173', # Permette al frontend di accedere alle api
     'http://127.0.0.1:5173',
+    'http://192.168.1.86:5173'
 ]
 
 ROOT_URLCONF = 'medflow_backend.urls'

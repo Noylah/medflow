@@ -10,6 +10,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 const links = [
   {
@@ -42,8 +43,22 @@ export default function App() {
                       path="/"
                       element={<Navigate to="/dashboard" replace />}
                     />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/patients" element={<Patients />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patients"
+                      element={
+                        <ProtectedRoute>
+                          <Patients />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="*" element={<div>TODO: PAGINA 404</div>} />
                   </Routes>
                 </main>

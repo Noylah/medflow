@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 interface LoginProps {}
 
 export default function Login({}: LoginProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const auth = useContext(AuthContext);
   return (
     <div className="w-screen h-screen flex items-center justify-evenly bg-slate-50">
       <div className="w-full max-w-md min-h-137.5 bg-foreground text-background rounded-3xl flex flex-col p-8 shadow-2xl justify-between">
@@ -35,10 +39,21 @@ export default function Login({}: LoginProps) {
                   if (response.ok) {
                     return response.json();
                   }
-                  throw new Error("Credenziali errate");
+                  return response.json().then((errorData) => {
+                    throw new Error(errorData.detail || "Errore sconosciuto.");
+                  });
                 })
                 .then((data) => {
-                  console.log(data);
+                  if (auth) {
+                    auth.loginUser(data.token, {
+                      username: data.username,
+                      first_name: data.first_name,
+                      last_name: data.last_name,
+                      role: data.role,
+                      is_superuser: data.is_superuser,
+                    });
+                  }
+                  navigate("/dashboard");
                 })
                 .catch((error) => {
                   console.error(error);
