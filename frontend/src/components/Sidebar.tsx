@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 
 interface LinkItem {
   name: string;
-  route: string;
+  route: string[];
   icon: LucideIcon;
 }
 
@@ -21,10 +21,10 @@ export default function Sidebar({ links }: SidebarProps) {
         {links.map((link) => {
           return (
             <SidebarItem
-              isActive={location.pathname === link.route}
+              isActive={link.route.some((r) => location.pathname.includes(r))}
               icon={link.icon}
-              to={link.route}
-              key={link.route}
+              to={link.route[0]}
+              key={link.route[0]}
             >
               {link.name}
             </SidebarItem>

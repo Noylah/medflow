@@ -1,6 +1,13 @@
-interface FilterBoxProps {}
+interface FilterBoxProps {
+  filters: { status: string; color: string };
+  onFilterChange: (key: "status" | "color", value: string) => void;
+}
 
-export default function FilterBox({}: FilterBoxProps) {
+export default function FilterBox({ filters, onFilterChange }: FilterBoxProps) {
+  function resetFilters() {
+    onFilterChange("status", "");
+    onFilterChange("color", "");
+  }
   return (
     <div className="flex w-full shrink-0 flex-col gap-2 rounded-2xl border-3 border-primary bg-white/30 p-4 md:w-64">
       <span className="text-xs font-bold tracking-wider text-primary-dark uppercase">
@@ -10,23 +17,27 @@ export default function FilterBox({}: FilterBoxProps) {
       <div className="flex flex-col gap-1">
         <label className="group flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-primary/20">
           <span className="text-sm font-medium text-foreground/80">
-            Active Encounter
+            Last Encounter Status
           </span>
-          <div className="text-primary-dark transition-transform group-hover:scale-105">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-square"
+          <div className="text-primary-dark transition-transform group-hover:scale-103">
+            <select
+              className="cursor-pointer border-none bg-transparent pr-2 text-right text-sm font-medium text-primary-dark outline-none"
+              value={filters.status}
+              onChange={(e) => onFilterChange("status", e.target.value)}
             >
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-            </svg>
+              <option value="" className="text-foreground">
+                All Status
+              </option>
+              <option value="ACTIVE" className="text-foreground">
+                Active
+              </option>
+              <option value="UNDER_VISIT" className="text-foreground">
+                Under Visit
+              </option>
+              <option value="DISCHARGED" className="text-foreground">
+                Discharged
+              </option>
+            </select>
           </div>
         </label>
       </div>
@@ -34,26 +45,39 @@ export default function FilterBox({}: FilterBoxProps) {
       <div className="flex flex-col gap-1">
         <label className="group flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-primary/20">
           <span className="text-sm font-medium text-foreground/80">
-            Select Filter
+            Last Triage Color
           </span>
           <div className="text-primary-dark transition-transform group-hover:scale-103">
-            <select className="cursor-pointer border-none bg-transparent pr-2 text-right text-sm font-medium text-primary-dark outline-none">
+            <select
+              className="cursor-pointer border-none bg-transparent pr-2 text-right text-sm font-medium text-primary-dark outline-none"
+              value={filters.color}
+              onChange={(e) => onFilterChange("color", e.target.value)}
+            >
               <option value="" className="text-foreground">
-                All Roles
+                All Colors
               </option>
-              <option value="doctor" className="text-foreground">
-                Doctor
+              <option value="RED" className="text-foreground">
+                Red
               </option>
-              <option value="nurse" className="text-foreground">
-                Nurse
+              <option value="YELLOW" className="text-foreground">
+                Yellow
               </option>
-              <option value="receptionist" className="text-foreground">
-                Receptionist
+              <option value="GREEN" className="text-foreground">
+                Green
+              </option>
+              <option value="WHITE" className="text-foreground">
+                White
               </option>
             </select>
           </div>
         </label>
       </div>
+      <span
+        className="bg-primary rounded-lg w-fit px-2 py-1 text-background font-bold text-sm hover:bg-primary-dark translate-colors duration-400 cursor-pointer"
+        onClick={() => resetFilters()}
+      >
+        RESET FILTERS
+      </span>
     </div>
   );
 }

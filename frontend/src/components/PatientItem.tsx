@@ -1,22 +1,63 @@
-import { Ellipsis, User, Settings, Trash2, X } from "lucide-react"; // Cambiate icone per il contesto
-import { useState } from "react";
+import { Ellipsis, User, Settings, Trash2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface PatientItemProps {
+  patient_id: number;
   first_name: string;
   last_name: string;
   fiscal_code: string;
   birth_date: string;
-  last_encounter_status: string;
 }
 
+const statusDict = {
+  ACTIVE: "Active",
+  UNDER_VISIT: "Under Visit",
+  DISCHARGED: "Discharged",
+  NO_DATA: "No Data",
+  ERROR: "Error",
+} as const;
+
+type StatusKey = keyof typeof statusDict;
+
 export default function PatientItem({
+  patient_id,
   first_name,
   last_name,
   fiscal_code,
   birth_date,
-  last_encounter_status,
 }: PatientItemProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState<StatusKey>("NO_DATA");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const token = localStorage.getItem("token")?.trim();
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/patients/${patient_id}/latest_encounter`,
+          {
+            headers: { Authorization: `Token ${token}` },
+          },
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setStatus(data.latest_encounter?.status || "UNKNOWN");
+        } else {
+          setStatus("NO_DATA");
+        }
+      } catch (e) {
+        console.error(e);
+        setStatus("ERROR");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatus();
+  }, [patient_id]);
+
+  if (loading) return;
 
   return (
     <div className="flex min-h-36 w-full max-w-sm flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -73,8 +114,10 @@ export default function PatientItem({
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
             Last Encounter
           </span>
-          <span className="font-bold text-green-600">
-            {last_encounter_status}
+          <span
+            className={`font-bold uppercase ${status == "ACTIVE" ? "text-green-600" : status == "UNDER_VISIT" ? "text-blue-500" : status == "DISCHARGED" ? "text-gray-700" : status == "NO_DATA" ? "text-gray-700" : "text-red-500"}`}
+          >
+            {statusDict[status]}
           </span>
         </div>
       </div>

@@ -22,4 +22,6 @@ urlpatterns = [
     # --- OTHER VIEWS ---
     path('encounters/<int:encounter_id>/discharge', views.discharge_patient, name='discharge_patient'),
     path('patients/<int:patient_id>/timeline', views.patient_timeline, name='patient_timeline'),
+    path('patients/<int:patient_id>/latest_encounter', views.patient_latest_encounter, name='patient_latest_encounter'),
+
 ]

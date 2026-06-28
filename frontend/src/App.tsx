@@ -11,16 +11,17 @@ import {
   Navigate,
 } from "react-router-dom";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import PatientInfo from "./pages/PatientInfo";
 
 const links = [
   {
     name: "Dashboard",
-    route: "/dashboard",
+    route: ["/dashboard"],
     icon: LayoutDashboard,
   },
   {
     name: "Patients",
-    route: "/patients",
+    route: ["/patients", "/patient/"],
     icon: Users,
   },
 ];
@@ -56,6 +57,14 @@ export default function App() {
                       element={
                         <ProtectedRoute>
                           <Patients />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient/:id"
+                      element={
+                        <ProtectedRoute>
+                          <PatientInfo />
                         </ProtectedRoute>
                       }
                     />

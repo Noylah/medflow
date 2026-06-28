@@ -23,8 +23,8 @@ def patient_list(request):
         
         patients = Patient.objects.all().order_by('last_name')
         search_query = request.query_params.get('search', None)
-        last_encounter_status = request.query_params.get('encounter', None)
-        last_encounter_color = request.query_params.get('color', None)
+        last_encounter_status = request.query_params.get('status', None)
+        last_triage_color = request.query_params.get('color', None)
         
         if search_query:
             patients = patients.filter(
@@ -43,6 +43,17 @@ def patient_list(request):
                 patients = patients.annotate(
                     latest_status=Subquery(latest_encounter)
                 ).filter(latest_status=status_upper)
+
+        if last_triage_color:
+            color_upper = last_triage_color.upper()
+            if color_upper in ["RED", "YELLOW", "GREEN", "WHITE"]:
+                latest_color_subquery = Encounter.objects.filter(
+                    patient=OuterRef('pk')
+                ).order_by('-admission_time').values('triage__color_code')[:1]
+                
+                patients = patients.annotate(
+                    latest_color=Subquery(latest_color_subquery)
+                ).filter(latest_color=color_upper)   
                 
         serializer = PatientSerializer(patients, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -516,4 +527,29 @@ def patient_timeline(request, patient_id):
             timeline_data.append(encounter_data)
         
         return Response({"patient": PatientSerializer(patient_obj).data, "history": timeline_data}, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+# --- PATIENT LAST ENCOUNTER ---
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def patient_latest_encounter(request, patient_id):
+    if request.method == "GET":
+        if not request.user.is_superuser:
+            if request.user.role not in ["RECEPTIONIST", "NURSE", "DOCTOR"]:
+                return Response({"detail": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            patient_obj = Patient.objects.get(pk=patient_id)
+        except Patient.DoesNotExist:
+            return Response({"detail": "Patient not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        latest_encounter = Encounter.objects.filter(
+            patient=patient_obj
+        ).order_by('-admission_time').first()
+        
+        if not latest_encounter:
+            return Response({"detail": "No encounters found for this patient."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = EncounterReadSerializer(latest_encounter)
+        
+        return Response({"latest_encounter": serializer.data}, status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)
