@@ -1,9 +1,21 @@
 import { Ellipsis, User, Settings, Trash2, X } from "lucide-react"; // Cambiate icone per il contesto
 import { useState } from "react";
 
-interface PatientItemProps {}
+interface PatientItemProps {
+  first_name: string;
+  last_name: string;
+  fiscal_code: string;
+  birth_date: string;
+  last_encounter_status: string;
+}
 
-export default function PatientItem({}: PatientItemProps) {
+export default function PatientItem({
+  first_name,
+  last_name,
+  fiscal_code,
+  birth_date,
+  last_encounter_status,
+}: PatientItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -11,10 +23,10 @@ export default function PatientItem({}: PatientItemProps) {
       <div className="flex items-start justify-between">
         <div className="flex flex-col">
           <span className="text-base font-bold text-foreground">
-            Rossi Mario
+            {last_name} {first_name}
           </span>
           <span className="mt-0.5 font-mono text-xs text-slate-400">
-            MRRRSS85A01F205Z
+            {fiscal_code}
           </span>
         </div>
 
@@ -28,7 +40,7 @@ export default function PatientItem({}: PatientItemProps) {
 
           {isOpen && (
             <div
-              className="absolute right-0 top-[calc(100%+6px)] z-50 min-w-[150px] rounded-2xl bg-foreground p-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200"
+              className="absolute right-0 top-[calc(100%+6px)] z-50 min-w-37.5 rounded-2xl bg-foreground p-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col gap-0.5">
@@ -55,13 +67,15 @@ export default function PatientItem({}: PatientItemProps) {
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
             Birth
           </span>
-          <span className="font-medium text-foreground">22/12/2005</span>
+          <span className="font-medium text-foreground">{birth_date}</span>
         </div>
         <div className="flex flex-col text-right">
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
             Last Encounter
           </span>
-          <span className="font-bold text-green-600">ACTIVE</span>
+          <span className="font-bold text-green-600">
+            {last_encounter_status}
+          </span>
         </div>
       </div>
     </div>
